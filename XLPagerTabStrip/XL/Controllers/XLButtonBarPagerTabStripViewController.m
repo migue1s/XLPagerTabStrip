@@ -159,6 +159,27 @@
         [self.buttonBarView moveFromIndex:fromIndex
                                   toIndex:toIndex
                    withProgressPercentage:progressPercentage];
+        
+        if (self.shouldChangeActiveColors) {
+            if (progressPercentage > 0.6 && self.selectedCell!=toIndex) {
+                [self.buttonBarView deselectItemAtIndexPath:[NSIndexPath indexPathForRow:self.selectedCell inSection:0] animated:NO];
+                ((XLButtonBarViewCell*)[self.buttonBarView cellForItemAtIndexPath:[NSIndexPath indexPathForRow:self.selectedCell inSection:0]]).label.textColor = self.disabledColor;
+                
+                self.selectedCell = toIndex;
+                
+                ((XLButtonBarViewCell*)[self.buttonBarView cellForItemAtIndexPath:[NSIndexPath indexPathForRow:self.selectedCell inSection:0]]).label.textColor = self.activeColor;
+                [self.buttonBarView selectItemAtIndexPath:[NSIndexPath indexPathForRow:self.selectedCell inSection:0] animated:NO scrollPosition:UICollectionViewScrollPositionNone];
+            }
+            else if (progressPercentage < 0.4 && self.selectedCell!=fromIndex) {
+                [self.buttonBarView deselectItemAtIndexPath:[NSIndexPath indexPathForRow:self.selectedCell inSection:0] animated:NO];
+                ((XLButtonBarViewCell*)[self.buttonBarView cellForItemAtIndexPath:[NSIndexPath indexPathForRow:self.selectedCell inSection:0]]).label.textColor = self.disabledColor;
+                
+                self.selectedCell = fromIndex;
+                
+                ((XLButtonBarViewCell*)[self.buttonBarView cellForItemAtIndexPath:[NSIndexPath indexPathForRow:self.selectedCell inSection:0]]).label.textColor = self.activeColor;
+                [self.buttonBarView selectItemAtIndexPath:[NSIndexPath indexPathForRow:self.selectedCell inSection:0] animated:NO scrollPosition:UICollectionViewScrollPositionNone];
+            }
+        }
     }
 }
 
