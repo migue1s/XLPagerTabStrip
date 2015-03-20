@@ -135,6 +135,17 @@
         if (newIndex < [self.pagerTabStripChildViewControllers indexOfObject:fromViewController]){
             direction = XLPagerTabStripDirectionRight;
         }
+        
+        if (self.shouldChangeActiveColors) {
+            [self.buttonBarView deselectItemAtIndexPath:[NSIndexPath indexPathForRow:self.selectedCell inSection:0] animated:NO];
+            ((XLButtonBarViewCell*)[self.buttonBarView cellForItemAtIndexPath:[NSIndexPath indexPathForRow:self.selectedCell inSection:0]]).label.textColor = self.disabledColor;
+            
+            self.selectedCell += direction==XLPagerTabStripDirectionRight?-1:+1;
+            
+            ((XLButtonBarViewCell*)[self.buttonBarView cellForItemAtIndexPath:[NSIndexPath indexPathForRow:self.selectedCell inSection:0]]).label.textColor = self.activeColor;
+            [self.buttonBarView selectItemAtIndexPath:[NSIndexPath indexPathForRow:self.selectedCell inSection:0] animated:NO scrollPosition:UICollectionViewScrollPositionNone];
+        }
+        
         [self.buttonBarView moveToIndex:newIndex animated:YES swipeDirection:direction];
     }
 }
@@ -176,6 +187,7 @@
     self.shouldUpdateButtonBarView = NO;
     self.selectedCell = indexPath.row;
     if (self.shouldChangeActiveColors) {
+        NSLog(@"enabled cell: %ld", (long)self.selectedCell);
         ((XLButtonBarViewCell*)[collectionView cellForItemAtIndexPath:indexPath]).label.textColor = self.activeColor;
     }
     [self moveToViewControllerAtIndex:indexPath.item];  
@@ -183,6 +195,7 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath {
     if (self.shouldChangeActiveColors) {
+        NSLog(@"disabled cell: %ld", (long)self.selectedCell);
         ((XLButtonBarViewCell*)[collectionView cellForItemAtIndexPath:indexPath]).label.textColor = self.disabledColor;
     }
 }
