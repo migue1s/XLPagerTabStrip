@@ -30,4 +30,13 @@
 
 @property (readonly, nonatomic) XLButtonBarView * buttonBarView;
 
+/**
+ *
+ * @brief Changes the color for the text inside the bar. All unselected texts will get the disabledColor while the currently selected one will have the enabledColor
+ * @param enabledColor The color for the selected tab
+ * @param disabledColor The color for the unselected tabs
+ *
+ **/
+-(void) setEnabledTextColor:(UIColor*) enabledColor andDisabledColor:(UIColor*) disabledColor;
+
 @end

@@ -31,6 +31,11 @@
 @property (nonatomic) IBOutlet XLButtonBarView * buttonBarView;
 @property (nonatomic) BOOL shouldUpdateButtonBarView;
 
+@property (nonatomic) NSInteger selectedCell;
+@property (nonatomic) BOOL shouldChangeActiveColors;
+@property (strong, nonatomic) UIColor* activeColor;
+@property (strong, nonatomic) UIColor* disabledColor;
+
 @end
 
 @implementation XLButtonBarPagerTabStripViewController
@@ -43,6 +48,8 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         self.shouldUpdateButtonBarView = YES;
+        self.shouldChangeActiveColors = NO;
+        self.selectedCell = 0;
     }
     return self;
 }
@@ -52,6 +59,8 @@
     self = [super initWithCoder:coder];
     if (self) {
         self.shouldUpdateButtonBarView = YES;
+        self.shouldChangeActiveColors = NO;
+        self.selectedCell = 0;
     }
     return self;
 }
@@ -95,6 +104,11 @@
     }
 }
 
+-(void) setEnabledTextColor:(UIColor *)enabledColor andDisabledColor:(UIColor *)disabledColor {
+    self.activeColor = enabledColor;
+    self.disabledColor = disabledColor;
+    self.shouldChangeActiveColors = YES;
+}
 
 #pragma mark - Properties
 
@@ -160,8 +174,19 @@
 {
     [self.buttonBarView moveToIndex:indexPath.item animated:YES swipeDirection:XLPagerTabStripDirectionNone];
     self.shouldUpdateButtonBarView = NO;
+    self.selectedCell = indexPath.row;
+    if (self.shouldChangeActiveColors) {
+        ((XLButtonBarViewCell*)[collectionView cellForItemAtIndexPath:indexPath]).label.textColor = self.activeColor;
+    }
     [self moveToViewControllerAtIndex:indexPath.item];  
 }
+
+- (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath {
+    if (self.shouldChangeActiveColors) {
+        ((XLButtonBarViewCell*)[collectionView cellForItemAtIndexPath:indexPath]).label.textColor = self.disabledColor;
+    }
+}
+
 
 #pragma merk - UICollectionViewDataSource
 
@@ -182,6 +207,15 @@
     UIViewController<XLPagerTabStripChildItem> * childController =   [self.pagerTabStripChildViewControllers objectAtIndex:indexPath.item];
     
     [buttonBarCell.label setText:[childController titleForPagerTabStripViewController:self]];
+    
+    if (self.shouldChangeActiveColors) {
+        if (indexPath.row == self.selectedCell) {
+            buttonBarCell.label.textColor = self.activeColor;
+        }
+        else {
+            buttonBarCell.label.textColor = self.disabledColor;
+        }
+    }
     
     return buttonBarCell;
 }

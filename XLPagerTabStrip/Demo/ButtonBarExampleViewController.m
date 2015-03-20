@@ -37,6 +37,8 @@
     self.isProgressiveIndicator = NO;
     // Do any additional setup after loading the view.
     [self.buttonBarView.selectedBar setBackgroundColor:[UIColor orangeColor]];
+    
+    [self setEnabledTextColor:[UIColor whiteColor] andDisabledColor:[UIColor lightGrayColor]];
 }
 
 #pragma mark - XLPagerTabStripViewControllerDataSource
