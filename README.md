@@ -48,6 +48,7 @@ The most interesting customizable features are:
 * Ability to skip intermediate view controllers when tapped on a "tab".
 * Indicators can be added at any position of the screen through storyboard layouts. 
 * Add space padding between view controllers.
+* Optionally add a color to selected/unselected tabs (through the setEnabledTextColor:andDisabledColor: method on the XLButtonBarPagerTabStripViewController)
 
 
 
