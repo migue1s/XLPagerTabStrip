@@ -58,6 +58,15 @@ typedef NS_ENUM(NSUInteger, XLPagerTabStripDirection) {
 
 @optional
 
+/**
+ *
+ * @brief Called whenever the current tab changes
+ * @param pagerTabStripViewController The controller
+ * @param index The current index
+ *
+ **/
+-(void) pagerTabStripViewController:(XLPagerTabStripViewController *)pagerTabStripViewController didSelectIndex: (NSInteger) index;
+
 -(void)pagerTabStripViewController:(XLPagerTabStripViewController *)pagerTabStripViewController updateIndicatorToViewController:(UIViewController *)toViewController fromViewController:(UIViewController *)fromViewController;
 
 -(void)pagerTabStripViewController:(XLPagerTabStripViewController *)pagerTabStripViewController

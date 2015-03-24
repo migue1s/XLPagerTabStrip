@@ -147,6 +147,10 @@
         }
         
         [self.buttonBarView moveToIndex:newIndex animated:YES swipeDirection:direction];
+        
+        if ([self.delegate respondsToSelector:@selector(pagerTabStripViewController:didSelectIndex:)]) {
+            [self.delegate pagerTabStripViewController:pagerTabStripViewController didSelectIndex:newIndex];
+        }
     }
 }
 
@@ -160,25 +164,41 @@
                                   toIndex:toIndex
                    withProgressPercentage:progressPercentage];
         
+        //Calculate which are the previous/next cells
+        NSInteger previousCell = self.selectedCell;
+        NSInteger nextCell;
+        if (progressPercentage > 0.6 && self.selectedCell!=toIndex) {
+            nextCell = toIndex;
+        }
+        else if (progressPercentage < 0.4 && self.selectedCell!=fromIndex) {
+            nextCell = fromIndex;
+        }
+        else {
+            nextCell = previousCell;
+        }
+        
+        //if the cell hasn't changed, don't call the next functions
+        if (nextCell == previousCell) {
+            return;
+        }
+        
+        //update the current cell
+        self.selectedCell = nextCell;
+        
+        //If there is an active color, then set the cell as active
         if (self.shouldChangeActiveColors) {
-            if (progressPercentage > 0.6 && self.selectedCell!=toIndex) {
-                [self.buttonBarView deselectItemAtIndexPath:[NSIndexPath indexPathForRow:self.selectedCell inSection:0] animated:NO];
-                ((XLButtonBarViewCell*)[self.buttonBarView cellForItemAtIndexPath:[NSIndexPath indexPathForRow:self.selectedCell inSection:0]]).label.textColor = self.disabledColor;
-                
-                self.selectedCell = toIndex;
-                
-                ((XLButtonBarViewCell*)[self.buttonBarView cellForItemAtIndexPath:[NSIndexPath indexPathForRow:self.selectedCell inSection:0]]).label.textColor = self.activeColor;
-                [self.buttonBarView selectItemAtIndexPath:[NSIndexPath indexPathForRow:self.selectedCell inSection:0] animated:NO scrollPosition:UICollectionViewScrollPositionNone];
-            }
-            else if (progressPercentage < 0.4 && self.selectedCell!=fromIndex) {
-                [self.buttonBarView deselectItemAtIndexPath:[NSIndexPath indexPathForRow:self.selectedCell inSection:0] animated:NO];
-                ((XLButtonBarViewCell*)[self.buttonBarView cellForItemAtIndexPath:[NSIndexPath indexPathForRow:self.selectedCell inSection:0]]).label.textColor = self.disabledColor;
-                
-                self.selectedCell = fromIndex;
-                
-                ((XLButtonBarViewCell*)[self.buttonBarView cellForItemAtIndexPath:[NSIndexPath indexPathForRow:self.selectedCell inSection:0]]).label.textColor = self.activeColor;
-                [self.buttonBarView selectItemAtIndexPath:[NSIndexPath indexPathForRow:self.selectedCell inSection:0] animated:NO scrollPosition:UICollectionViewScrollPositionNone];
-            }
+            [self.buttonBarView deselectItemAtIndexPath:[NSIndexPath indexPathForRow:previousCell inSection:0] animated:NO];
+            ((XLButtonBarViewCell*)[self.buttonBarView cellForItemAtIndexPath:[NSIndexPath indexPathForRow:previousCell inSection:0]]).label.textColor = self.disabledColor;
+            
+            
+            ((XLButtonBarViewCell*)[self.buttonBarView cellForItemAtIndexPath:[NSIndexPath indexPathForRow:nextCell inSection:0]]).label.textColor = self.activeColor;
+            [self.buttonBarView selectItemAtIndexPath:[NSIndexPath indexPathForRow:nextCell inSection:0] animated:NO scrollPosition:UICollectionViewScrollPositionNone];
+        }
+        
+        //Tell the delegate that there's a new active tab
+        if ([self.delegate respondsToSelector:@selector(pagerTabStripViewController:didSelectIndex:)]) {
+            
+            [self.delegate pagerTabStripViewController:pagerTabStripViewController didSelectIndex:nextCell];
         }
     }
 }
@@ -208,15 +228,18 @@
     self.shouldUpdateButtonBarView = NO;
     self.selectedCell = indexPath.row;
     if (self.shouldChangeActiveColors) {
-        NSLog(@"enabled cell: %ld", (long)self.selectedCell);
         ((XLButtonBarViewCell*)[collectionView cellForItemAtIndexPath:indexPath]).label.textColor = self.activeColor;
     }
-    [self moveToViewControllerAtIndex:indexPath.item];  
+    [self moveToViewControllerAtIndex:indexPath.item];
+    
+    //Tell the delegate a new cell has been selected
+    if ([self.delegate respondsToSelector:@selector(pagerTabStripViewController:didSelectIndex:)]) {
+        [self.delegate pagerTabStripViewController:self didSelectIndex:self.selectedCell];
+    }
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath {
     if (self.shouldChangeActiveColors) {
-        NSLog(@"disabled cell: %ld", (long)self.selectedCell);
         ((XLButtonBarViewCell*)[collectionView cellForItemAtIndexPath:indexPath]).label.textColor = self.disabledColor;
     }
 }

@@ -41,6 +41,11 @@
     [self setEnabledTextColor:[UIColor whiteColor] andDisabledColor:[UIColor lightGrayColor]];
 }
 
+#pragma mark - XLPagerTabStripViewControllerDelegate
+-(void) pagerTabStripViewController:(XLPagerTabStripViewController *)pagerTabStripViewController didSelectIndex:(NSInteger)index {
+    NSLog(@"Changed to tab %ld", (long)index);
+}
+
 #pragma mark - XLPagerTabStripViewControllerDataSource
 
 -(NSArray *)childViewControllersForPagerTabStripViewController:(XLPagerTabStripViewController *)pagerTabStripViewController
